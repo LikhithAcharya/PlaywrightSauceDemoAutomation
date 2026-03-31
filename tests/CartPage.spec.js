@@ -75,5 +75,5 @@ test.describe('Cart Page Validation', () => {
     const updatedCartProducts = await cartPage.getCartProducts();
     expect(updatedCartProducts.length).toBe(initialProducts.length - 1);
 })
-});//Update fro tester 2 again updated for tester 2
+});//Update fro tester 2 again updated for tester 2  
 
