@@ -8,6 +8,9 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -17,8 +20,8 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test tests/ProductPage.spec.js
+    - name: Run Playwright tests (Shard ${{ matrix.shard }})
+      run: npx playwright test tests/ProductPage.spec.js --shard=${{ matrix.shard }}/4
     - name: Upload Playwright Report
       if: always()
       uses: actions/upload-artifact@v4
