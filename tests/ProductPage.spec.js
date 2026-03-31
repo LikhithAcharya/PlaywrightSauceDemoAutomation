@@ -42,7 +42,7 @@ test.describe('Product page Tests', () => {
         await productPage.addSpecificProductToCart(productsToCart);
     });
 
-    test.only('Filter By A to z', async ({page}) => {
+    test('Filter By A to z', async ({page}) => {
         await productPage.filterByAtoZ();  
         const names = await productPage.getProductNames();
         const sortedNames = [...names].sort();
