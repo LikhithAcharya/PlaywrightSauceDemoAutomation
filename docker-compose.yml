@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  playwright-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: playwright-sauce-demo
+    environment:
+      - NODE_ENV=production
+      - CI=true
+    volumes:
+      - ./logs:/app/logs
+      - ./playwright-report:/app/playwright-report
+      - ./allure-results:/app/allure-results
+    networks:
+      - playwright-network
+
+networks:
+  playwright-network:
+    driver: bridge

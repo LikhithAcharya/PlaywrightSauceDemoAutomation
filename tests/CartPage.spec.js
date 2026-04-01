@@ -63,7 +63,7 @@ test.describe('Cart Page Validation', () => {
         expect(cartProducts).toEqual(addSpecificProductDetails);
     });
 
-    test.only("Validate Remove Product functionality", async({page})=>
+    test("Validate Remove Product functionality", async({page})=>
 {
     await productPage.addAllProductsToCart();
     await productPage.navigateToCart();  // Changed from clickOnCartLink
