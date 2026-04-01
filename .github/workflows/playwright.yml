@@ -1,38 +1,58 @@
-name: Playwright Tests
+name: Playwright Tests (Docker)
+
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         shard: [1, 2, 3, 4]
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests (Shard ${{ matrix.shard }})
-      run: npx playwright test tests/ProductPage.spec.js --shard=${{ matrix.shard }}/4
-    - name: Upload Allure results (Shard ${{ matrix.shard }})
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-results-shard-${{ matrix.shard }}
-        path: allure-results
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Build Docker Image
+      - name: Build Docker Image
+        run: docker build -t pw-framework -f Dockerfile.focal .
+
+      # Run Playwright tests inside Docker (Shard-wise)
+      - name: Run Playwright tests (Shard ${{ matrix.shard }})
+        run: |
+          docker run --rm \
+          -v ${{ github.workspace }}/playwright-report:/app/playwright-report \
+          -v ${{ github.workspace }}/allure-results:/app/allure-results \
+          pw-framework \
+          npx playwright test tests/ProductPage.spec.js --shard=${{ matrix.shard }}/4
+
+      # Upload Allure results per shard
+      - name: Upload Allure results (Shard ${{ matrix.shard }})
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-shard-${{ matrix.shard }}
+          path: allure-results
+
+      # Upload Playwright report per shard
+      - name: Upload Playwright Report (Shard ${{ matrix.shard }})
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-shard-${{ matrix.shard }}
+          path: playwright-report
 
   merge-allure-report:
     needs: test
     if: always()
     runs-on: ubuntu-latest
+
     steps:
       - name: Download all Allure results
         uses: actions/download-artifact@v4

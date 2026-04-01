@@ -1,13 +1,22 @@
 {
   "name": "pwautoframework",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright Automation Framework",
   "main": "index.js",
-  "scripts": {},
-  "keywords": [],
+  "type": "commonjs",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:report": "npx playwright show-report",
+    "allure:generate": "allure generate ./allure-results --clean",
+    "allure:open": "allure open ./allure-report",
+    "docker:build": "docker build -t pw-framework -f Dockerfile.focal .",
+    "docker:run": "docker run --rm -v %cd%/playwright-report:/app/playwright-report pw-framework"
+  },
+  "keywords": ["playwright", "automation", "testing"],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0",
